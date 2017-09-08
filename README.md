@@ -1,2 +1,2 @@
 # AquaFish
-Student project
+Student project. Aquarium for your fish :)
