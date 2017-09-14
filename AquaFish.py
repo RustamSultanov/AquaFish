@@ -12,11 +12,10 @@ if not pygame.image.get_extended():
 
 
 #game constants
-MAX_SHOTS      = 2      #most player bullets onscreen
-ALIEN_ODDS     = 22     #chances a new alien appears
+ALIEN_ODDS     = 22    #chances a new alien appears
 BOMB_ODDS      = 60    #chances a new bomb will drop
-ALIEN_RELOAD   = 12     #frames between new aliens
-SCREENRECT     = Rect(0, 0, 640, 480)
+MAX_FISHES     = 10    #frames between new aliens
+SCREENRECT     = Rect(0, 0, 640, 357)
 SCORE          = 0
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -90,7 +89,7 @@ class Player(pygame.sprite.Sprite):
 
 
 class Fish(pygame.sprite.Sprite):
-    speed = 5
+    speed = 50
     animcycle = 12
     images = []
     def __init__(self):
@@ -194,15 +193,11 @@ def main(winstyle = 0):
     #Load images, assign to sprite classes
     #(do this before the classes are used, after screen setup)
     img = load_image('f_gold.png')
-    Player.images = [img, pygame.transform.flip(img, 1, 0)]
     img = load_image('f_gold.png')
     Explosion.images = [img, pygame.transform.flip(img, 1, 1)]
-    
+
     img = load_image('f_gold.png')
     Fish.images =  [img, pygame.transform.flip(img, 1, 0)]
-
-    Bomb.images = [load_image('f_gold.png')]
-    Shot.images = [load_image('f_gold.png')]
 
     #decorate the game window
     icon = pygame.transform.scale(Fish.images[0], (32, 32))
@@ -228,34 +223,27 @@ def main(winstyle = 0):
 
     # Initialize Game Groups
     fishes = pygame.sprite.Group()
-    shots = pygame.sprite.Group()
-    bombs = pygame.sprite.Group()
     all = pygame.sprite.RenderUpdates()
-    lastalien = pygame.sprite.GroupSingle()
 
     #assign default groups to each sprite class
-    Player.containers = all
-    Fish.containers = fishes, all, lastalien
-    Shot.containers = shots, all
-    Bomb.containers = bombs, all
+    Fish.containers = fishes, all
     Explosion.containers = all
     Score.containers = all
 
     #Create Some Starting Values
-    global score
-    alienreload = ALIEN_RELOAD
-    kills = 0
+    # global score
     clock = pygame.time.Clock()
 
     #initialize our starting sprites
     global SCORE
-    player = Player()
+    current_fishes = 1
+
     Fish() #note, this 'lives' because it goes into a sprite group
     if pygame.font:
         all.add(Score())
 
 
-    while player.alive():
+    while 1:
 
         #get input
         for event in pygame.event.get():
@@ -270,40 +258,24 @@ def main(winstyle = 0):
         #update all the sprites
         all.update()
 
-        #handle player input
-        direction = keystate[K_RIGHT] - keystate[K_LEFT]
-        player.move(direction)
-        firing = keystate[K_SPACE]
-        if not player.reloading and firing and len(shots) < MAX_SHOTS:
-            Shot(player.gunpos())
-            shoot_sound.play()
-        player.reloading = firing
-
-        # Create new alien
-        if alienreload:
-            alienreload = alienreload - 1
-        elif not int(random.random() * ALIEN_ODDS):
+        # Create new fish
+        if keystate[K_SPACE] and (current_fishes < MAX_FISHES):
             Fish()
-            alienreload = ALIEN_RELOAD
+            current_fishes +=1
+            print current_fishes
+            print "\n"
+            print MAX_FISHES
 
-        # Detect collisions
-        for alien in pygame.sprite.spritecollide(player, fishes, 1):
-            boom_sound.play()
-            Explosion(alien)
-            Explosion(player)
-            SCORE = SCORE + 1
-            player.kill()
+        if keystate[K_r] :
+            all.kill
 
-        for alien in pygame.sprite.groupcollide(shots, fishes, 1, 1).keys():
-            boom_sound.play()
-            Explosion(alien)
-            SCORE = SCORE + 1
-
-        for bomb in pygame.sprite.spritecollide(player, bombs, 1):
-            boom_sound.play()
-            Explosion(player)
-            Explosion(bomb)
-            player.kill()
+        # # Detect collisions
+        # for alien in pygame.sprite.spritecollide(player, fishes, 1):
+        #     boom_sound.play()
+        #     Explosion(alien)
+        #     Explosion(player)
+        #     SCORE = SCORE + 1
+        #     player.kill()
 
         #draw the scene
         dirty = all.draw(screen)
