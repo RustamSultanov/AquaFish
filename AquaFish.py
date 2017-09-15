@@ -224,6 +224,7 @@ def main(winstyle = 0):
     # Initialize Game Groups
     fishes = pygame.sprite.Group()
     all = pygame.sprite.RenderUpdates()
+    fishes_list = []
 
     #assign default groups to each sprite class
     Fish.containers = fishes, all
@@ -236,9 +237,8 @@ def main(winstyle = 0):
 
     #initialize our starting sprites
     global SCORE
-    current_fishes = 1
 
-    Fish() #note, this 'lives' because it goes into a sprite group
+    # Fish() #note, this 'lives' because it goes into a sprite group
     if pygame.font:
         all.add(Score())
 
@@ -259,15 +259,14 @@ def main(winstyle = 0):
         all.update()
 
         # Create new fish
-        if keystate[K_SPACE] and (current_fishes < MAX_FISHES):
-            Fish()
-            current_fishes +=1
-            print current_fishes
-            print "\n"
-            print MAX_FISHES
+        if keystate[K_SPACE] and (fishes_list.count
+         < MAX_FISHES):
+            fishes_list.append(Fish())
 
         if keystate[K_r] :
-            all.kill
+            for f in fishes_list:
+                print f
+                f.kill
 
         # # Detect collisions
         # for alien in pygame.sprite.spritecollide(player, fishes, 1):
