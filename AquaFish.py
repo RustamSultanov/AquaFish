@@ -4,6 +4,8 @@ import random, os.path
 
 #import basic pygame modules
 import pygame
+import time
+
 from pygame.locals import *
 
 #see if we can load more than standard BMP
@@ -89,7 +91,7 @@ class Player(pygame.sprite.Sprite):
 
 
 class Fish(pygame.sprite.Sprite):
-    speed = 50
+    speed = 7
     animcycle = 12
     images = []
     def __init__(self):
@@ -224,7 +226,6 @@ def main(winstyle = 0):
     # Initialize Game Groups
     fishes = pygame.sprite.Group()
     all = pygame.sprite.RenderUpdates()
-    fishes_list = []
 
     #assign default groups to each sprite class
     Fish.containers = fishes, all
@@ -242,6 +243,7 @@ def main(winstyle = 0):
     if pygame.font:
         all.add(Score())
 
+    last_created_time = 0
 
     while 1:
 
@@ -250,23 +252,29 @@ def main(winstyle = 0):
             if event.type == QUIT or \
                 (event.type == KEYDOWN and event.key == K_ESCAPE):
                     return
-        keystate = pygame.key.get_pressed()
+
+        #to avoid fast fist creating
+        if last_created_time + 0.15 < time.time() :
+            last_created_time = time.time()
+            keystate = pygame.key.get_pressed()
+
+            # Create new fish
+            if keystate[K_SPACE] and (len(fishes) < MAX_FISHES):
+                fishes.add(Fish())
+            # Deleting fish
+            if keystate[K_r] :
+                fish_sprites = fishes.sprites()
+                if keystate[K_LSHIFT] :
+                    for f in fish_sprites :
+                        f.kill()
+                elif len(fish_sprites) > 0:
+                    fish_sprites[0].kill()
 
         # clear/erase the last drawn sprites
         all.clear(screen, background)
 
         #update all the sprites
         all.update()
-
-        # Create new fish
-        if keystate[K_SPACE] and (fishes_list.count
-         < MAX_FISHES):
-            fishes_list.append(Fish())
-
-        if keystate[K_r] :
-            for f in fishes_list:
-                print f
-                f.kill
 
         # # Detect collisions
         # for alien in pygame.sprite.spritecollide(player, fishes, 1):
