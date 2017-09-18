@@ -243,7 +243,7 @@ def main(winstyle = 0):
     boom_sound = load_sound('boom.wav')
     shoot_sound = load_sound('car_door.wav')
     if pygame.mixer:
-        music = os.path.join(main_dir, 'data', 'music', 'boom.wav')
+        music = os.path.join(main_dir, 'data', 'music', 'Aqua.wav')
         pygame.mixer.music.load(music)
         pygame.mixer.music.play(-1)
 
