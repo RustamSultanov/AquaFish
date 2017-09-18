@@ -194,12 +194,12 @@ class Score(pygame.sprite.Sprite):
         self.color = Color('white')
         self.lastscore = -1
         self.update()
-        self.rect = self.image.get_rect().move(10, 450)
+        self.rect = self.image.get_rect().move(10, 340)
 
     def update(self):
         if SCORE != self.lastscore:
             self.lastscore = SCORE
-            msg = "Score: %d" % SCORE
+            msg = "[SPACE] -- create new fish | [R] -- delete fish | [LSHIFT+R]  -- delete all fishes | Total fishes: %d of %d" % (SCORE, MAX_FISHES)
             self.image = self.font.render(msg, 0, self.color)
 
 
@@ -284,6 +284,7 @@ def main(winstyle = 0):
 
             # Create new fish
             if keystate[K_SPACE] and (len(fishes) < MAX_FISHES):
+                SCORE += 1
                 fishes.add(Fish())
             # Deleting fish
             if keystate[K_r] :
@@ -291,8 +292,10 @@ def main(winstyle = 0):
                 if keystate[K_LSHIFT] :
                     for f in fish_sprites :
                         f.kill()
+                    SCORE = 0
                 elif len(fish_sprites) > 0:
                     fish_sprites[0].kill()
+                    SCORE -= 1
 
         # clear/erase the last drawn sprites
         all.clear(screen, background)
