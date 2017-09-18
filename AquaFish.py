@@ -91,24 +91,48 @@ class Player(pygame.sprite.Sprite):
 
 
 class Fish(pygame.sprite.Sprite):
-    speed = 7
-    animcycle = 12
+    speed = [1, 5]
     images = []
+    current_speed = 0
+    last_speed_change = 0
+    last_deep_change = 0
+    last_facing_change = 0
+
     def __init__(self):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = self.images[0]
         self.rect = self.image.get_rect()
-        self.facing = random.choice((-1,1)) * Fish.speed
+        self.facing = self.get_speed(force=1)
         self.frame = 0
         if self.facing < 0:
             self.rect.right = SCREENRECT.right
 
+    def get_speed(self, force=0):
+        if time.time() > self.last_speed_change + 2 and random.choice((0,1)) or force:
+            self.facing = random.choice((-1,1)) * random.randrange(self.speed[0], self.speed[1], 1)
+            self.last_speed_change = time.time()
+        # print(time.time(), self.last_speed_change + 0.2)
+
+        return self.facing
+
     def update(self):
+        self.facing = self.get_speed()
         self.rect.move_ip(self.facing, 0)
-        if not SCREENRECT.contains(self.rect):
-            self.facing = -self.facing;
-            self.rect.top = self.rect.bottom + 1
-            self.rect = self.rect.clamp(SCREENRECT)
+
+        if not SCREENRECT.contains(self.rect) or random.choice((0,1)):
+            if not SCREENRECT.contains(self.rect) or random.choice((0,1)) and self.last_facing_change + 10 < time.time() :
+                self.facing = -self.facing;
+                self.last_facing_change = time.time()
+                if random.choice((0,1)) and time.time() > self.last_deep_change + 2 :
+                    self.last_deep_change = time.time()
+                    if random.choice((0,1)) : 
+                        self.rect.top = self.rect.bottom + 1
+                    else :
+                        self.rect.bottom = self.rect.top - 1
+
+
+                self.rect = self.rect.clamp(SCREENRECT)
+
         self.frame = self.frame + 1
         if self.facing < 0:
                 self.image = self.images[0]
