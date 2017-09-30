@@ -1,4 +1,7 @@
 # AquaFish
+
+[![Build Status](https://travis-ci.org/mrsndmn/AquaFish.svg?branch=master)](https://travis-ci.org/MrSndmn/AquaFish)
+
 Student project. Aquarium for your fish :)
 
 Control:

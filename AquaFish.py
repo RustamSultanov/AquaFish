@@ -5,6 +5,7 @@ import random, os.path
 #import basic pygame modules
 import pygame
 import time
+import yaml
 
 from pygame.locals import *
 
@@ -12,12 +13,16 @@ from pygame.locals import *
 if not pygame.image.get_extended():
     raise SystemExit("Sorry, extended image module required")
 
+conf_path = os.path.join( 'data', 'config.yml' )
+conf_file = open(conf_path, 'r')
+CONF = yaml.load(conf_file)
+WIDTH, HIGTH = CONF['SCREEN_SIZE'][0], CONF['SCREEN_SIZE'][1]
 
 #game constants
 ALIEN_ODDS     = 22    #chances a new alien appears
 BOMB_ODDS      = 60    #chances a new bomb will drop
 MAX_FISHES     = 10    #frames between new aliens
-SCREENRECT     = Rect(0, 0, 640, 357)
+SCREENRECT     = Rect(0, 0, WIDTH, HIGTH)
 SCORE          = 0
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -62,32 +67,32 @@ def load_sound(file):
 # the keyboard
 
 
-class Player(pygame.sprite.Sprite):
-    speed = 10
-    bounce = 24
-    gun_offset = -11
-    images = []
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = self.images[0]
-        self.rect = self.image.get_rect(midbottom=SCREENRECT.midbottom)
-        self.reloading = 0
-        self.origtop = self.rect.top
-        self.facing = -1
+# class Player(pygame.sprite.Sprite):
+#     speed = 10
+#     bounce = 24
+#     gun_offset = -11
+#     images = []
+#     def __init__(self):
+#         pygame.sprite.Sprite.__init__(self, self.containers)
+#         self.image = self.images[0]
+#         self.rect = self.image.get_rect(midbottom=SCREENRECT.midbottom)
+#         self.reloading = 0
+#         self.origtop = self.rect.top
+#         self.facing = -1
 
-    def move(self, direction):
-        if direction: self.facing = direction
-        self.rect.move_ip(direction*self.speed, 0)
-        self.rect = self.rect.clamp(SCREENRECT)
-        if direction < 0:
-            self.image = self.images[0]
-        elif direction > 0:
-            self.image = self.images[1]
-        self.rect.top = self.origtop - (self.rect.left//self.bounce%2)
+#     def move(self, direction):
+#         if direction: self.facing = direction
+#         self.rect.move_ip(direction*self.speed, 0)
+#         self.rect = self.rect.clamp(SCREENRECT)
+#         if direction < 0:
+#             self.image = self.images[0]
+#         elif direction > 0:
+#             self.image = self.images[1]
+#         self.rect.top = self.origtop - (self.rect.left//self.bounce%2)
 
-    def gunpos(self):
-        pos = self.facing*self.gun_offset + self.rect.centerx
-        return pos, self.rect.top
+#     def gunpos(self):
+#         pos = self.facing*self.gun_offset + self.rect.centerx
+#         return pos, self.rect.top
 
 
 class Fish(pygame.sprite.Sprite):
@@ -140,50 +145,50 @@ class Fish(pygame.sprite.Sprite):
             self.image = self.images[1]
 
 
-class Explosion(pygame.sprite.Sprite):
-    defaultlife = 12
-    animcycle = 3
-    images = []
-    def __init__(self, actor):
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = self.images[0]
-        self.rect = self.image.get_rect(center=actor.rect.center)
-        self.life = self.defaultlife
+# class Explosion(pygame.sprite.Sprite):
+#     defaultlife = 12
+#     animcycle = 3
+#     images = []
+#     def __init__(self, actor):
+#         pygame.sprite.Sprite.__init__(self, self.containers)
+#         self.image = self.images[0]
+#         self.rect = self.image.get_rect(center=actor.rect.center)
+#         self.life = self.defaultlife
 
-    def update(self):
-        self.life = self.life - 1
-        self.image = self.images[self.life//self.animcycle%2]
-        if self.life <= 0: self.kill()
-
-
-class Shot(pygame.sprite.Sprite):
-    speed = -11
-    images = []
-    def __init__(self, pos):
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = self.images[0]
-        self.rect = self.image.get_rect(midbottom=pos)
-
-    def update(self):
-        self.rect.move_ip(0, self.speed)
-        if self.rect.top <= 0:
-            self.kill()
+#     def update(self):
+#         self.life = self.life - 1
+#         self.image = self.images[self.life//self.animcycle%2]
+#         if self.life <= 0: self.kill()
 
 
-class Bomb(pygame.sprite.Sprite):
-    speed = 9
-    images = []
-    def __init__(self, alien):
-        pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = self.images[0]
-        self.rect = self.image.get_rect(midbottom=
-                    alien.rect.move(0,5).midbottom)
+# class Shot(pygame.sprite.Sprite):
+#     speed = -11
+#     images = []
+#     def __init__(self, pos):
+#         pygame.sprite.Sprite.__init__(self, self.containers)
+#         self.image = self.images[0]
+#         self.rect = self.image.get_rect(midbottom=pos)
 
-    def update(self):
-        self.rect.move_ip(0, self.speed)
-        if self.rect.bottom >= 470:
-            Explosion(self)
-            self.kill()
+#     def update(self):
+#         self.rect.move_ip(0, self.speed)
+#         if self.rect.top <= 0:
+#             self.kill()
+
+
+# class Bomb(pygame.sprite.Sprite):
+#     speed = 9
+#     images = []
+#     def __init__(self, alien):
+#         pygame.sprite.Sprite.__init__(self, self.containers)
+#         self.image = self.images[0]
+#         self.rect = self.image.get_rect(midbottom=
+#                     alien.rect.move(0,5).midbottom)
+
+#     def update(self):
+#         self.rect.move_ip(0, self.speed)
+#         if self.rect.bottom >= 470:
+#             Explosion(self)
+#             self.kill()
 
 
 class Score(pygame.sprite.Sprite):
@@ -220,7 +225,7 @@ def main(winstyle = 0):
     #(do this before the classes are used, after screen setup)
     img = load_image('f_gold.png')
     img = load_image('f_gold.png')
-    Explosion.images = [img, pygame.transform.flip(img, 1, 1)]
+    # Explosion.images = [img, pygame.transform.flip(img, 1, 1)]
 
     img = load_image('f_gold.png')
     Fish.images =  [img, pygame.transform.flip(img, 1, 0)]
@@ -253,7 +258,7 @@ def main(winstyle = 0):
 
     #assign default groups to each sprite class
     Fish.containers = fishes, all
-    Explosion.containers = all
+    # Explosion.containers = all
     Score.containers = all
 
     #Create Some Starting Values
@@ -275,38 +280,34 @@ def main(winstyle = 0):
 
         #get input
         for event in pygame.event.get():
-            if event.type == QUIT or \
-                (event.type == KEYDOWN and event.key == K_ESCAPE):
+            if event.type == QUIT:
+                return
+
+            if event.type == KEYDOWN: 
+                if event.key == K_ESCAPE:
                     return
 
-        #to avoid fast fist creating
-        if last_created_time + 0.15 < time.time() :
-            last_created_time = time.time()
-            keystate = pygame.key.get_pressed()
+                if event.key == K_SPACE and (len(fishes) < MAX_FISHES):
+                    SCORE += 1
+                    fishes.add(Fish())
 
-            # Create new fish
-            if keystate[K_SPACE] and (len(fishes) < MAX_FISHES):
-                SCORE += 1
-                fishes.add(Fish())
-            # Deleting fish
-            if keystate[K_r] :
-                fish_sprites = fishes.sprites()
-                if keystate[K_LSHIFT] :
-                    for f in fish_sprites :
-                        f.kill()
-                    SCORE = 0
-                elif len(fish_sprites) > 0:
-                    fish_sprites[0].kill()
-                    SCORE -= 1
+                if event.key == K_m:
+                    if (not music_paused_flag):
+                        pygame.mixer.music.pause()
+                        music_paused_flag = 1
+                    else:
+                        pygame.mixer.music.unpause()
+                        music_paused_flag = 0
 
-            #play/pause background music
-            if keystate[K_m]:
-                if(not music_paused_flag):
-                    pygame.mixer.music.pause()
-                    music_paused_flag = 1
-                else:
-                    pygame.mixer.music.unpause()
-                    music_paused_flag = 0
+                if event.key == K_r :
+                    fish_sprites = fishes.sprites()
+                    if pygame.key.get_pressed()[K_LSHIFT] :
+                        for f in fish_sprites :
+                            f.kill()
+                        SCORE = 0
+                    elif len(fish_sprites) > 0:
+                        fish_sprites[0].kill()
+                        SCORE -= 1
 
 
         # clear/erase the last drawn sprites
