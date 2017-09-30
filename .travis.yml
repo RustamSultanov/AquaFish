@@ -21,7 +21,7 @@ install:
 - sudo apt-get update -y
 # - sudo apt-get install -y python3-pygame
 
-- sudo pip install pyaml
+- pip install pyaml
 - pip install pygame
 
 script:
