@@ -1,0 +1,12 @@
+language: python
+os: linux
+sudo: enabled
+
+before_install:
+- sudo apt-get update -qq
+- sudo apt-get build-dep python-pygame
+- sudo apt-get install python-dev
+- sudo apt-get install python3 -y
+
+python:
+  - '3.6'
