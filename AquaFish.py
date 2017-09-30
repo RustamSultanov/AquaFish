@@ -199,7 +199,7 @@ class Score(pygame.sprite.Sprite):
     def update(self):
         if SCORE != self.lastscore:
             self.lastscore = SCORE
-            msg = "[SPACE] -- create new fish | [R] -- delete fish | [LSHIFT+R]  -- delete all fishes | Total fishes: %d of %d" % (SCORE, MAX_FISHES)
+            msg = "[M] - mute | [SPACE] - create new fish | [R] - kill one | [LSHIFT+R] - kill all | Total fishes: %d of %d" % (SCORE, MAX_FISHES)
             self.image = self.font.render(msg, 0, self.color)
 
 
@@ -240,8 +240,8 @@ def main(winstyle = 0):
     pygame.display.flip()
 
     #load the sound effects
-    boom_sound = load_sound('boom.wav')
-    shoot_sound = load_sound('car_door.wav')
+    # boom_sound = load_sound('boom.wav')
+    # shoot_sound = load_sound('car_door.wav')
     if pygame.mixer:
         music = os.path.join(main_dir, 'data', 'music', 'Aqua.wav')
         pygame.mixer.music.load(music)
@@ -268,6 +268,8 @@ def main(winstyle = 0):
         all.add(Score())
 
     last_created_time = 0
+
+    music_paused_flag = 0
 
     while 1:
 
@@ -296,6 +298,16 @@ def main(winstyle = 0):
                 elif len(fish_sprites) > 0:
                     fish_sprites[0].kill()
                     SCORE -= 1
+
+            #play/pause background music
+            if keystate[K_m]:
+                if(not music_paused_flag):
+                    pygame.mixer.music.pause()
+                    music_paused_flag = 1
+                else:
+                    pygame.mixer.music.unpause()
+                    music_paused_flag = 0
+
 
         # clear/erase the last drawn sprites
         all.clear(screen, background)
