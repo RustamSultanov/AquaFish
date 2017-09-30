@@ -2,11 +2,18 @@ language: python
 os: linux
 sudo: enabled
 
-before_install:
+notifications:
+  email: false
+
+install:
 - sudo apt-get update -qq
 - sudo apt-get build-dep python-pygame
 - sudo apt-get install python-dev
 - sudo apt-get install python3 -y
+- sudo pip3 install pyaml
 
 python:
   - '3.6'
+
+after_success:
+  - python -m unittest tests/test_something.py
