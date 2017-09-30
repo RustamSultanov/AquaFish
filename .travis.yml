@@ -25,6 +25,7 @@ install:
 - pip install pygame
 
 script:
+  - find -iregex '.*[а-я].*' | wc -l | perl -lnwe 'die(q/No russian symbols in the project!/) if ($_ > 0)'
   - python2.7 tests/test.py
 
 # after_success:
