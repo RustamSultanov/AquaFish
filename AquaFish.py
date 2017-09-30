@@ -5,6 +5,7 @@ import random, os.path
 #import basic pygame modules
 import pygame
 import time
+import yaml
 
 from pygame.locals import *
 
@@ -12,12 +13,16 @@ from pygame.locals import *
 if not pygame.image.get_extended():
     raise SystemExit("Sorry, extended image module required")
 
+conf_path = os.path.join( 'data', 'config.yml' )
+conf_file = open(conf_path, 'r')
+CONF = yaml.load(conf_file)
+WIDTH, HIGTH = CONF['SCREEN_SIZE'][0], CONF['SCREEN_SIZE'][1]
 
 #game constants
 ALIEN_ODDS     = 22    #chances a new alien appears
 BOMB_ODDS      = 60    #chances a new bomb will drop
 MAX_FISHES     = 10    #frames between new aliens
-SCREENRECT     = Rect(0, 0, 640, 357)
+SCREENRECT     = Rect(0, 0, WIDTH, HIGTH)
 SCORE          = 0
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -275,39 +280,75 @@ def main(winstyle = 0):
 
         #get input
         for event in pygame.event.get():
-            if event.type == QUIT or \
-                (event.type == KEYDOWN and event.key == K_ESCAPE):
+            if event.type == QUIT:
+                return
+
+            if event.type == KEYDOWN: 
+                if event.key == K_ESCAPE:
                     return
 
+                if event.key == K_SPACE and (len(fishes) < MAX_FISHES):
+                    SCORE += 1
+                    fishes.add(Fish())
+
+                if event.key == K_m:
+                    if (not music_paused_flag):
+                        pygame.mixer.music.pause()
+                        music_paused_flag = 1
+                    else:
+                        pygame.mixer.music.unpause()
+                        music_paused_flag = 0
+
+                if event.key == K_r :
+                    fish_sprites = fishes.sprites()
+                    if pygame.key.get_pressed()[K_LSHIFT] :
+                        for f in fish_sprites :
+                            f.kill()
+                        SCORE = 0
+                    elif len(fish_sprites) > 0:
+                        fish_sprites[0].kill()
+                        SCORE -= 1
+
+        #
+        # keystate = pygame.key.get_pressed()
+        # if keystate[K_r] :
+        #     fish_sprites = fishes.sprites()
+        #     if keystate[K_LSHIFT] :
+        #         for f in fish_sprites :
+        #             f.kill()
+        #         SCORE = 0
+        #     elif len(fish_sprites) > 0:
+        #         fish_sprites[0].kill()
+        #         SCORE -= 1
+
         #to avoid fast fist creating
-        if last_created_time + 0.15 < time.time() :
-            last_created_time = time.time()
-            keystate = pygame.key.get_pressed()
+        # if last_created_time + 0.15 < time.time() :
+        #     last_created_time = time.time()
+        #     keystate = pygame.key.get_pressed()
 
-            # Create new fish
-            if keystate[K_SPACE] and (len(fishes) < MAX_FISHES):
-                SCORE += 1
-                fishes.add(Fish())
-            # Deleting fish
-            if keystate[K_r] :
-                fish_sprites = fishes.sprites()
-                if keystate[K_LSHIFT] :
-                    for f in fish_sprites :
-                        f.kill()
-                    SCORE = 0
-                elif len(fish_sprites) > 0:
-                    fish_sprites[0].kill()
-                    SCORE -= 1
+#            # Create new fish
+            # if keystate[K_SPACE] and (len(fishes) < MAX_FISHES):
+            #     SCORE += 1
+            #     fishes.add(Fish())
+#            # Deleting fish
+            # if keystate[K_r] :
+            #     fish_sprites = fishes.sprites()
+            #     if keystate[K_LSHIFT] :
+            #         for f in fish_sprites :
+            #             f.kill()
+            #         SCORE = 0
+            #     elif len(fish_sprites) > 0:
+            #         fish_sprites[0].kill()
+            #         SCORE -= 1
 
-            #play/pause background music
-            if keystate[K_m]:
-                if(not music_paused_flag):
-                    pygame.mixer.music.pause()
-                    music_paused_flag = 1
-                else:
-                    pygame.mixer.music.unpause()
-                    music_paused_flag = 0
-
+            # #play/pause background music
+            # if keystate[K_m]:
+            #     if(not music_paused_flag):
+            #         pygame.mixer.music.pause()
+            #         music_paused_flag = 1
+            #     else:
+            #         pygame.mixer.music.unpause()
+            #         music_paused_flag = 0
 
         # clear/erase the last drawn sprites
         all.clear(screen, background)
