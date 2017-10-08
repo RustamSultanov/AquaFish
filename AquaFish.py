@@ -32,6 +32,7 @@ def load_image(file):
     file = os.path.join(main_dir, 'data', 'img', file)
     try:
         surface = pygame.image.load(file)
+        surface.set_colorkey((0,0,0))
     except pygame.error:
         raise SystemExit('Could not load image "%s" %s'%(file, pygame.get_error()))
     return surface.convert()
@@ -106,6 +107,7 @@ class Fish(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.image = self.images[0]
+        self.image.set_colorkey((0,0,0))
         self.rect = self.image.get_rect()
         self.facing = self.get_speed(force=1)
         self.frame = 0
@@ -227,7 +229,7 @@ def main(winstyle = 0):
     img = load_image('f_gold.png')
     # Explosion.images = [img, pygame.transform.flip(img, 1, 1)]
 
-    img = load_image('f_gold.png')
+    img = load_image('fish1.png')
     Fish.images =  [img, pygame.transform.flip(img, 1, 0)]
 
     #decorate the game window
