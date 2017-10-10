@@ -1,6 +1,5 @@
 # AquaFish
-# <img src="https://worldvectorlogo.com/logos/python-3.svg" width="18%" height="10%" alt="" />
-[![Build Status](https://travis-ci.org/mrsndmn/AquaFish.svg?branch=master)](https://travis-ci.org/mrsndmn/AquaFish)
+# <img src="https://worldvectorlogo.com/logos/python-3.svg" width="18%" height="10%" alt="" /> [![Build Status](https://travis-ci.org/mrsndmn/AquaFish.svg?branch=master)](https://travis-ci.org/mrsndmn/AquaFish)
 
 Student project. Aquarium for your fish :)
 
