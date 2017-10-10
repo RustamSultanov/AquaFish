@@ -1,6 +1,6 @@
 # AquaFish
 
-[![Build Status](https://travis-ci.org/RustamSultanov/AquaFish.svg?branch=master)](https://travis-ci.org/RustamSultanov/AquaFish)
+[![Build Status](https://travis-ci.org/mrsndmn/AquaFish.svg?branch=master)](https://travis-ci.org/mrsndmn/AquaFish)
 
 Student project. Aquarium for your fish :)
 
