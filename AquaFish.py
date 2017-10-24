@@ -58,46 +58,10 @@ def load_sound(file):
     return dummysound()
 
 
-
-# each type of game object gets an init and an
-# update function. the update function is called
-# once per frame, and it is when each object should
-# change it's current position and state. the Player
-# object actually gets a "move" function instead of
-# update, since it is passed extra information about
-# the keyboard
-
-
-# class Player(pygame.sprite.Sprite):
-#     speed = 10
-#     bounce = 24
-#     gun_offset = -11
-#     images = []
-#     def __init__(self):
-#         pygame.sprite.Sprite.__init__(self, self.containers)
-#         self.image = self.images[0]
-#         self.rect = self.image.get_rect(midbottom=SCREENRECT.midbottom)
-#         self.reloading = 0
-#         self.origtop = self.rect.top
-#         self.facing = -1
-
-#     def move(self, direction):
-#         if direction: self.facing = direction
-#         self.rect.move_ip(direction*self.speed, 0)
-#         self.rect = self.rect.clamp(SCREENRECT)
-#         if direction < 0:
-#             self.image = self.images[0]
-#         elif direction > 0:
-#             self.image = self.images[1]
-#         self.rect.top = self.origtop - (self.rect.left//self.bounce%2)
-
-#     def gunpos(self):
-#         pos = self.facing*self.gun_offset + self.rect.centerx
-#         return pos, self.rect.top
-
-
 class Fish(pygame.sprite.Sprite):
     speed = [1, 5]
+    speedX = 0
+    speedY = 0
     images = []
     current_speed = 0
     last_speed_change = 0
@@ -110,7 +74,7 @@ class Fish(pygame.sprite.Sprite):
         self.image = self.images[self.mod][0]
         self.image.set_colorkey((0,0,0))
         self.rect = self.image.get_rect()
-        self.facing = self.get_speed(force=1)
+        self.get_speed(force=1)
         self.frame = 0
         if self.facing < 0:
             self.rect.right = SCREENRECT.right
@@ -118,14 +82,15 @@ class Fish(pygame.sprite.Sprite):
     def get_speed(self, force=0):
         if time.time() > self.last_speed_change + 2 and random.choice((0,1)) or force:
             self.facing = random.choice((-1,1)) * random.randrange(self.speed[0], self.speed[1], 1)
+            self.speedX = self.facing
             self.last_speed_change = time.time()
-        # print(time.time(), self.last_speed_change + 0.2)
-
-        return self.facing
+        if time.time() > self.last_deep_change + 2 and random.choice((0,1)) or force:
+            self.speedY = random.choice((-1,1)) * random.randrange(self.speed[0], self.speed[1]-2, 1)
+            self.last_deep_change = time.time()
 
     def update(self):
-        self.facing = self.get_speed()
-        self.rect.move_ip(self.facing, 0)
+        self.get_speed()
+        self.rect.move_ip(self.speedX, self.speedY)
 
         if not SCREENRECT.contains(self.rect) or random.choice((0,1)):
             if not SCREENRECT.contains(self.rect) or random.choice((0,1)) and self.last_facing_change + 10 < time.time() :
@@ -133,11 +98,6 @@ class Fish(pygame.sprite.Sprite):
                 self.last_facing_change = time.time()
                 if random.choice((0,1)) and time.time() > self.last_deep_change + 2 :
                     self.last_deep_change = time.time()
-                    if random.choice((0,1)) : 
-                        self.rect.top = self.rect.bottom + 1
-                    else :
-                        self.rect.bottom = self.rect.top - 1
-
 
                 self.rect = self.rect.clamp(SCREENRECT)
 
@@ -148,50 +108,6 @@ class Fish(pygame.sprite.Sprite):
             self.image = self.images[self.mod][1]
 
 
-# class Explosion(pygame.sprite.Sprite):
-#     defaultlife = 12
-#     animcycle = 3
-#     images = []
-#     def __init__(self, actor):
-#         pygame.sprite.Sprite.__init__(self, self.containers)
-#         self.image = self.images[0]
-#         self.rect = self.image.get_rect(center=actor.rect.center)
-#         self.life = self.defaultlife
-
-#     def update(self):
-#         self.life = self.life - 1
-#         self.image = self.images[self.life//self.animcycle%2]
-#         if self.life <= 0: self.kill()
-
-
-# class Shot(pygame.sprite.Sprite):
-#     speed = -11
-#     images = []
-#     def __init__(self, pos):
-#         pygame.sprite.Sprite.__init__(self, self.containers)
-#         self.image = self.images[0]
-#         self.rect = self.image.get_rect(midbottom=pos)
-
-#     def update(self):
-#         self.rect.move_ip(0, self.speed)
-#         if self.rect.top <= 0:
-#             self.kill()
-
-
-# class Bomb(pygame.sprite.Sprite):
-#     speed = 9
-#     images = []
-#     def __init__(self, alien):
-#         pygame.sprite.Sprite.__init__(self, self.containers)
-#         self.image = self.images[0]
-#         self.rect = self.image.get_rect(midbottom=
-#                     alien.rect.move(0,5).midbottom)
-
-#     def update(self):
-#         self.rect.move_ip(0, self.speed)
-#         if self.rect.bottom >= 470:
-#             Explosion(self)
-#             self.kill()
 
 
 class Score(pygame.sprite.Sprite):
