@@ -106,7 +106,8 @@ class Fish(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.image = self.images[0]
+        self.mod = random.choice((0, 1, 2, 3))
+        self.image = self.images[self.mod][0]
         self.image.set_colorkey((0,0,0))
         self.rect = self.image.get_rect()
         self.facing = self.get_speed(force=1)
@@ -142,9 +143,9 @@ class Fish(pygame.sprite.Sprite):
 
         self.frame = self.frame + 1
         if self.facing < 0:
-                self.image = self.images[0]
+                self.image = self.images[self.mod][0]
         elif self.facing > 0:
-            self.image = self.images[1]
+            self.image = self.images[self.mod][1]
 
 
 # class Explosion(pygame.sprite.Sprite):
@@ -225,15 +226,14 @@ def main(winstyle = 0):
 
     #Load images, assign to sprite classes
     #(do this before the classes are used, after screen setup)
-    img = load_image('f_gold.png')
-    img = load_image('f_gold.png')
-    # Explosion.images = [img, pygame.transform.flip(img, 1, 1)]
-
+    img2 = load_image('fish2.png')
+    img1 = load_image('Fish12.png')
+    img3 = load_image('Fish13.png')
     img = load_image('fish1.png')
-    Fish.images =  [img, pygame.transform.flip(img, 1, 0)]
+    Fish.images =  [[img, pygame.transform.flip(img, 1, 0)],[img1, pygame.transform.flip(img1, 1, 0)],[img2, pygame.transform.flip(img2, 1, 0)],[img3, pygame.transform.flip(img3, 1, 0)] ]
 
     #decorate the game window
-    icon = pygame.transform.scale(Fish.images[0], (32, 32))
+    icon = pygame.transform.scale(Fish.images[0][0], (32, 32))
     pygame.display.set_icon(icon)
     pygame.display.set_caption('Pygame Fishs')
     pygame.mouse.set_visible(0)
