@@ -80,12 +80,12 @@ class Fish(pygame.sprite.Sprite):
             self.rect.right = SCREENRECT.right
 
     def get_speed(self, force=0):
-        if time.time() > self.last_speed_change + 2 and random.choice((0,1)) or force:
+        if (time.time() > self.last_speed_change + 2) or force:
             self.facing = random.choice((-1,1)) * random.randrange(self.speed[0], self.speed[1], 1)
             self.speedX = self.facing
             self.last_speed_change = time.time()
-        if time.time() > self.last_deep_change + 2 and random.choice((0,1)) or force:
-            self.speedY = random.choice((-1,1)) * random.randrange(self.speed[0], self.speed[1]-2, 1)
+        if (time.time() > self.last_deep_change + 2) or force:
+            self.speedY = random.choice((-1,1)) * random.randrange(self.speed[0], self.speed[1]-3, 1)
             self.last_deep_change = time.time()
 
     def update(self):
@@ -146,7 +146,7 @@ def main(winstyle = 0):
     img1 = load_image('Fish12.png')
     img3 = load_image('Fish13.png')
     img = load_image('fish1.png')
-    Fish.images =  [[img, pygame.transform.flip(img, 1, 0)],[img1, pygame.transform.flip(img1, 1, 0)],[img2, pygame.transform.flip(img2, 1, 0)],[img3, pygame.transform.flip(img3, 1, 0)] ]
+    Fish.images =  [[img, pygame.transform.flip(img, 1, 0)],[img1, pygame.transform.flip(img1, 1, 0)],[img2, pygame.transform.flip(img2, 1, 0)],[pygame.transform.flip(img3, 1, 0), img3] ]
 
     #decorate the game window
     icon = pygame.transform.scale(Fish.images[0][0], (32, 32))
@@ -201,7 +201,7 @@ def main(winstyle = 0):
             if event.type == QUIT:
                 return
 
-            if event.type == KEYDOWN: 
+            if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     return
 
