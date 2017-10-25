@@ -82,7 +82,7 @@ class Fish(pygame.sprite.Sprite):
     def get_speed(self, force=0):
         if (time.time() > self.last_speed_change + 2) or force:
             self.facing = random.choice((-1,1)) * random.randrange(self.speed[0], self.speed[1], 1)
-            self.speedX = self.facing
+            
             self.last_speed_change = time.time()
         if (time.time() > self.last_deep_change + 2) or force:
             self.speedY = random.choice((-1,1)) * random.randrange(self.speed[0], self.speed[1]-3, 1)
@@ -90,15 +90,13 @@ class Fish(pygame.sprite.Sprite):
 
     def update(self):
         self.get_speed()
-        self.rect.move_ip(self.speedX, self.speedY)
+        self.rect.move_ip(self.facing, self.speedY)
 
         if not SCREENRECT.contains(self.rect) or random.choice((0,1)):
             if not SCREENRECT.contains(self.rect) or random.choice((0,1)) and self.last_facing_change + 10 < time.time() :
-                self.facing = -self.facing;
+                self.facing = - self.facing
+                self.speedY = random.choice((-1,1)) * random.randrange(self.speed[0], self.speed[1]-3, 1)
                 self.last_facing_change = time.time()
-                if random.choice((0,1)) and time.time() > self.last_deep_change + 2 :
-                    self.last_deep_change = time.time()
-
                 self.rect = self.rect.clamp(SCREENRECT)
 
         self.frame = self.frame + 1
@@ -163,8 +161,6 @@ def main(winstyle = 0):
     pygame.display.flip()
 
     #load the sound effects
-    # boom_sound = load_sound('boom.wav')
-    # shoot_sound = load_sound('car_door.wav')
     if pygame.mixer:
         music = os.path.join(main_dir, 'data', 'music', 'Aqua.wav')
         pygame.mixer.music.load(music)
@@ -233,14 +229,6 @@ def main(winstyle = 0):
 
         #update all the sprites
         all.update()
-
-        # # Detect collisions
-        # for alien in pygame.sprite.spritecollide(player, fishes, 1):
-        #     boom_sound.play()
-        #     Explosion(alien)
-        #     Explosion(player)
-        #     SCORE = SCORE + 1
-        #     player.kill()
 
         #draw the scene
         dirty = all.draw(screen)
